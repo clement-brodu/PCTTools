@@ -75,5 +75,19 @@ namespace PCTTools.Tests.TAssemblyCatalog
                 Is.EqualTo("PCTTools.Sample.SAssemblyCatalog.Generic.GenericDemo2<System.Int32, System.Collections.Generic.Dictionary<System.String, PCTTools.Sample.SAssemblyCatalog.Generic.GenericDemo<System.Int32>>>"));
 
         }
+
+        [Test()]
+        public void Generic5Test()
+        {
+            var type = typeof(System.Collections.ObjectModel.ReadOnlyDictionary<int, int>).GetGenericTypeDefinition();
+            var pct = new AssemblyCatalog();
+
+            pct.GenerateDocumentationFromType(type);
+
+            var typedoc = pct.TypeDocumentations.First();
+            var property = typedoc.Properties.First(p => p.Name == "Keys");
+            Assert.That(property.Type, Is.EqualTo("System.Collections.ObjectModel.KeyCollection"));
+
+        }
     }
 }

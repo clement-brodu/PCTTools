@@ -18,7 +18,7 @@ namespace PCTTools.Extensions
         /// <returns>System.String.</returns>
         public static string GetFormattedName(this Type type, bool useOeTypes = false)
         {
-            if (type.IsGenericType)
+            if (type.IsGenericType && type.Name.Contains("`"))
             {
                 string genericArguments = type.GetGenericArguments()
                                     .Select(x => x.GetFormattedName())
@@ -45,7 +45,7 @@ namespace PCTTools.Extensions
         public static string GetFormattedFullName(this Type type, bool useOeTypes = false)
         {
             var name = type.FullName ?? (type.IsGenericParameter ? type.Name : $"{type.Namespace}.{type.Name}");
-            if (type.IsGenericType && name != null)
+            if (type.IsGenericType && type.Name.Contains("`") && name != null)
             {
                 string genericArguments = type.GetGenericArguments()
                                     .Select(x => x.GetFormattedFullName())
