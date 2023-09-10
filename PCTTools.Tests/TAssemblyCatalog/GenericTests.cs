@@ -19,9 +19,10 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(type);
+            Assert.IsFalse(pct.HasError);
 
             var typedoc = pct.TypeDocumentations.First();
-            Assert.That(typedoc.Name, Is.EqualTo("GenericDemo<T>"));
+            Assert.That(typedoc.ShortName, Is.EqualTo("GenericDemo<T>"));
 
             var method = typedoc.Methods.First(m => m.Name == "Hello");
             Assert.That(method.ReturnType, Is.EqualTo("T"));
@@ -46,9 +47,10 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(type);
+            Assert.IsFalse(pct.HasError);
 
             var typedoc = pct.TypeDocumentations.First();
-            Assert.That(typedoc.Name, Is.EqualTo("GenericDemo2<T, U>"));
+            Assert.That(typedoc.ShortName, Is.EqualTo("GenericDemo2<T, U>"));
 
             var method = typedoc.Methods.First(m => m.Name == "Hello");
             Assert.That(method.ReturnType, Is.EqualTo("T"));
@@ -83,6 +85,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(type);
+            Assert.IsFalse(pct.HasError);
 
             var typedoc = pct.TypeDocumentations.First();
             var property = typedoc.Properties.First(p => p.Name == "Keys");

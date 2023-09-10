@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace PCTTools.Model
 {
@@ -7,12 +8,14 @@ namespace PCTTools.Model
     /// </summary>
     public class TypeDocumentation
     {
+        [JsonIgnore]
+        public string ShortName { get; set; }
         public string Name { get; set; }
-        public string FullName { get; set; }
-        public string AssemblyQualifiedName { get; set; }
+        public List<string> BaseTypes { get; set; }
         public bool IsClass { get; set; }
         public bool IsInterface { get; set; }
         public bool IsEnum { get; set; }
+        [JsonIgnore]
         public bool IsValueType { get; set; }
         public bool IsAbstract { get; set; }
         public bool IsSealed { get; set; }

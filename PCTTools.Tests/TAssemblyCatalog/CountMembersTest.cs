@@ -39,8 +39,9 @@ namespace PCTTools.Tests.TAssemblyCatalog
         {
             var pct = new AssemblyCatalog();
             pct.GenerateDocumentationFromType(typeToTest, withInherits);
+            Assert.IsFalse(pct.HasError);
 
-            var typedoc = pct.TypeDocumentations.First(t => t.Name == typeToTest.Name);
+            var typedoc = pct.TypeDocumentations.First(t => t.ShortName == typeToTest.Name);
 
             Assert.That(typedoc.Constructors.Count, Is.EqualTo(constructorsCount), "Incorrect number of constructor");
             Assert.That(typedoc.Properties.Count, Is.EqualTo(propertiesCount), "Incorrect number of properties");
@@ -55,8 +56,9 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
             pct.PublicOnly = true;
             pct.GenerateDocumentationFromType(typeToTest, withInherits);
+            Assert.IsFalse(pct.HasError);
 
-            var typedoc = pct.TypeDocumentations.First(t => t.Name == typeToTest.Name);
+            var typedoc = pct.TypeDocumentations.First(t => t.ShortName == typeToTest.Name);
             var systemObjectMethodsCount = withInherits ? 6 : 0; // remove 6 public and protected methods of System.Object
             var systemObjectPublicMethodsCount = withInherits ? 4 : 0; // add 4 public methods of System.Object
             var methodsPublicCount = (methodsCount - systemObjectMethodsCount) / 2 + systemObjectPublicMethodsCount;

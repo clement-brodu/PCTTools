@@ -21,6 +21,29 @@ namespace PCTTools
     public class AssemblyCatalog
     {
         /// <summary>
+        /// Writer to log things
+        /// </summary>
+        private TextWriter writer;
+        /// <summary>
+        /// Add Trace for each Assembly
+        /// </summary>
+        private bool logAssembly;
+        /// <summary>
+        /// Add Trace for each Type
+        /// </summary>
+        private bool logTypes;
+
+        /// <summary>
+        /// True if an error append during scan
+        /// </summary>
+        public bool HasError => ScanExceptions.Any();
+
+        /// <summary>
+        /// List of all scan exceptions 
+        /// </summary>
+        public List<Exception> ScanExceptions { get; set; } = new List<Exception>();
+
+        /// <summary>
         /// Each Type will contains documentation of Declared and Inherted members
         /// Default to false to return declared members only
         /// </summary>
@@ -37,7 +60,32 @@ namespace PCTTools
         /// </summary>
         public bool UseOeTypes { get; set; }
 
-        public List<TypeDocumentation> TypeDocumentations { get; set; } = new List<TypeDocumentation>();
+        /// <summary>
+        /// List of Types Documentation
+        /// </summary>
+        public List<TypeDocumentation> TypeDocumentations { get; } = new List<TypeDocumentation>();
+
+
+        /// <summary>
+        /// Define a Writer to log things
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="logAssembly"></param>
+        /// <param name="logType"></param>
+        public void SetWriter(TextWriter writer, bool logAssembly, bool logType)
+        {
+            this.writer = writer;
+            this.logAssembly = logAssembly;
+            this.logTypes = logType;
+        }
+        /// <summary>
+        /// Define a Writer to log things
+        /// </summary>
+        /// <param name="writer"></param>
+        public void SetWriter(TextWriter writer)
+        {
+            this.writer = writer;
+        }
 
         /// <summary>
         /// Write documentation in Json file
@@ -51,7 +99,26 @@ namespace PCTTools
             };
             var jsonSettings = new JsonSerializerSettings()
             {
+                DefaultValueHandling = DefaultValueHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = contractResolver
+            };
+            // Convert to Json
+            string json = JsonConvert.SerializeObject(TypeDocumentations, Formatting.Indented, jsonSettings);
+
+            // Write to file
+            File.WriteAllText(path, json);
+        }
+
+        internal void ToJsonFileFull(string path)
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+            var jsonSettings = new JsonSerializerSettings()
+            {
+
                 ContractResolver = contractResolver
             };
             // Convert to Json
@@ -70,9 +137,25 @@ namespace PCTTools
 
             foreach (var assembly in appDomain.GetAssemblies())
             {
-                GenerateDocumentationFromAssembly(assembly);
+                try
+                {
+
+                    // Exclude this assembly
+                    if (assembly == typeof(AssemblyCatalog).Assembly) continue;
+                    // Exclude Newtonsoft.Json if embedded in PCTTools
+                    if (assembly == typeof(JsonConvert).Assembly && assembly.CodeBase.EndsWith("PCTTools.dll")) continue;
+
+                    GenerateDocumentationFromAssembly(assembly);
+                }
+                catch (Exception ex)
+                {
+                    ScanExceptions.Add(ex);
+                    writer?.WriteLine("{0} - ERROR Reading Assembly {1} : {2}", DateTime.Now.ToString("s"), assembly.GetName().Name, ex.Message);
+                    writer?.WriteLine("{0}", ex.StackTrace);
+                }
             }
         }
+
 
         /// <summary>
         /// Generate documentation from an assembly
@@ -80,6 +163,9 @@ namespace PCTTools
         /// <param name="assembly">assembly to scan</param>
         public void GenerateDocumentationFromAssembly(Assembly assembly)
         {
+            if (logAssembly)
+                writer?.WriteLine("{0} - Scan Assembly {1}", DateTime.Now.ToString("s"), assembly.GetName().Name);
+
             foreach (Type type in assembly.GetTypes())
             {
                 GenerateDocumentationFromType(type);
@@ -102,9 +188,21 @@ namespace PCTTools
         /// <param name="withInherited">include inherited member in doc</param>
         internal void GenerateDocumentationFromType(Type type, bool withInherited)
         {
-            if (type.IsPublic)
+            try
             {
-                AddTypeToList(type, withInherited);
+                if (type.IsPublic)
+                {
+                    if (logTypes)
+                        writer?.WriteLine("{0} - \tScan Type {1}", DateTime.Now.ToString("s"), type.FullName);
+
+                    AddTypeToList(type, withInherited);
+                }
+            }
+            catch (Exception ex)
+            {
+                ScanExceptions.Add(ex);
+                writer?.WriteLine("{0} - ERROR Reading Type {1} : {2}", DateTime.Now.ToString("s"), type.FullName, ex.Message);
+                writer?.WriteLine("{0}", ex.StackTrace);
             }
         }
 
@@ -117,9 +215,8 @@ namespace PCTTools
         {
             var typeDocumentation = new TypeDocumentation
             {
-                Name = type.GetFormattedName(),
-                FullName = type.GetFormattedFullName(),
-                AssemblyQualifiedName = type.AssemblyQualifiedName,
+                ShortName = type.GetFormattedName(),
+                Name = type.GetFormattedFullName(),
                 IsClass = type.IsClass,
                 IsInterface = type.IsInterface,
                 IsEnum = type.IsEnum,
@@ -128,6 +225,7 @@ namespace PCTTools
                 IsSealed = type.IsSealed,
                 IsGeneric = type.IsGenericType,
                 IsNested = type.IsNested,
+                BaseTypes = GetBaseTypes(type),
                 Constructors = GetConstructors(type),
                 Methods = GetMethods(type, withInherited),
                 Properties = GetProperties(type, withInherited),
@@ -143,6 +241,25 @@ namespace PCTTools
             {
                 AddTypeToList(nested, withInherited);
             }
+        }
+
+        /// <summary>
+        /// Return all Base Types
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        internal List<string> GetBaseTypes(Type type)
+        {
+            var baseTypes = new List<string>();
+
+            var baseType = type.BaseType;
+            while (baseType != null)
+            {
+                baseTypes.Add(baseType.FullName);
+
+                baseType = baseType.BaseType;
+            }
+            return baseTypes;
         }
 
         /// <summary>
@@ -163,19 +280,50 @@ namespace PCTTools
                 .Select(method => new MethodDocumentation
                 {
                     Name = method.Name,
+                    FormattedName = GetFormattedMethodName(method),
                     ReturnType = method.ReturnType.GetFormattedFullName(UseOeTypes),
-                    Parameters = method.GetParameters()
-                        .Select(param => new ParameterDocumentation
-                        {
-                            Name = param.Name,
-                            Type = param.ParameterType.GetFormattedFullName(UseOeTypes)
-                        })
-                        .ToList(),
+                    Parameters = GetParameters(method),
                     Obsolete = method.GetObsolete(),
                     IsStatic = method.IsStatic,
                     IsPublic = method.IsPublic
                 })
                 .ToList();
+        }
+
+        /// <summary>
+        /// Retrieve Parameters Documentation
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        internal List<ParameterDocumentation> GetParameters(MethodBase method)
+        {
+            return method.GetParameters()
+                                    .Select(param => new ParameterDocumentation
+                                    {
+                                        Name = param.Name,
+                                        Type = param.ParameterType.GetFormattedFullName(UseOeTypes)
+                                    })
+                                    .ToList();
+        }
+
+        /// <summary>
+        /// Find if method is public or protected. ignore internal or private
+        /// </summary>
+        /// <param name="method">Method</param>
+        /// <param name="publicOnly">ignore protected, public only</param>
+        /// <returns></returns>
+        public string GetFormattedMethodName(MethodBase method)
+        {
+            var parameters = method.GetParameters();
+            var stringparameters = !parameters.Any() ?
+                    string.Empty :
+                    parameters
+                        .Select(p => string.Format("{0}{1} {2}",
+                            p.IsOut ? "OUTPUT " : string.Empty,
+                            p.Name,
+                            p.ParameterType.GetFormattedFullName(UseOeTypes)))
+                        .Aggregate((x1, x2) => $"{x1}, {x2}");
+            return string.Format("{0}({1})", method.Name, stringparameters);
         }
 
         /// <summary>
@@ -196,13 +344,7 @@ namespace PCTTools
                 .Select(method => new ConstructorDocumentation
                 {
                     Name = method.Name,
-                    Parameters = method.GetParameters()
-                        .Select(param => new ParameterDocumentation
-                        {
-                            Name = param.Name,
-                            Type = param.ParameterType.GetFormattedFullName(UseOeTypes)
-                        })
-                        .ToList(),
+                    Parameters = GetParameters(method),
                     Obsolete = method.GetObsolete(),
                     IsStatic = method.IsStatic,
                     IsPublic = method.IsPublic
@@ -256,7 +398,9 @@ namespace PCTTools
                 .Select(e => new EventDocumentation
                 {
                     Name = e.Name,
-                    EventType = e.EventHandlerType?.GetFormattedFullName(UseOeTypes),
+                    EventType = e.EventHandlerType.GetFormattedFullName(UseOeTypes),
+                    DelegateReturnType = e.EventHandlerType.GetMethod("Invoke").ReturnType.GetFormattedFullName(UseOeTypes),
+                    DelegateParameters = GetParameters(e.EventHandlerType.GetMethod("Invoke")),
                     Obsolete = e.GetObsolete(),
                     IsStatic = e.AddMethod?.IsStatic == true && e.RemoveMethod?.IsStatic == true,
                     IsPublic = e.AddMethod?.IsPublic ?? e.RemoveMethod?.IsPublic ?? false

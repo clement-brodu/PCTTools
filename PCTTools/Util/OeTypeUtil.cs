@@ -25,6 +25,7 @@ namespace PCTTools.Util
             OeTypes.Add(typeof(Single), "DECIMAL");
             OeTypes.Add(typeof(string), "CHARACTER");
             OeTypes.Add(typeof(char), "CHARACTER");
+            OeTypes.Add(typeof(void), "VOID");
         }
 
         /// <summary>

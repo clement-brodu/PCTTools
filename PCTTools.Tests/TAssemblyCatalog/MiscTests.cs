@@ -16,8 +16,9 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromAssembly(typeof(NestedPublic).Assembly);
+            Assert.IsFalse(pct.HasError);
 
-            var doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(AbstractDemo).FullName));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(true), "IsAbstract");
@@ -29,7 +30,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             Assert.That(doctype.IsSealed, Is.EqualTo(false), "IsSealed");
             Assert.That(doctype.IsValueType, Is.EqualTo(false), "IsValueType");
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(ClassDemo).FullName));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(false), "IsAbstract");
@@ -41,7 +42,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             Assert.That(doctype.IsSealed, Is.EqualTo(false), "IsSealed");
             Assert.That(doctype.IsValueType, Is.EqualTo(false), "IsValueType");
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(ClassSealedDemo).FullName));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(false), "IsAbstract");
@@ -53,7 +54,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             Assert.That(doctype.IsSealed, Is.EqualTo(true), "IsSealed");
             Assert.That(doctype.IsValueType, Is.EqualTo(false), "IsValueType");
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(NestedDemo).FullName));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(false), "IsAbstract");
@@ -65,7 +66,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             Assert.That(doctype.IsSealed, Is.EqualTo(false), "IsSealed");
             Assert.That(doctype.IsValueType, Is.EqualTo(false), "IsValueType");
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(ClassGenericDemo<>).GetFormattedFullName()));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(false), "IsAbstract");
@@ -77,7 +78,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             Assert.That(doctype.IsSealed, Is.EqualTo(false), "IsSealed");
             Assert.That(doctype.IsValueType, Is.EqualTo(false), "IsValueType");
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(InterfaceDemo).FullName));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(true), "IsAbstract");
@@ -89,7 +90,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             Assert.That(doctype.IsSealed, Is.EqualTo(false), "IsSealed");
             Assert.That(doctype.IsValueType, Is.EqualTo(false), "IsValueType");
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(InterfaceGenericDemo<>).GetFormattedFullName()));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(true), "IsAbstract");
@@ -101,7 +102,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             Assert.That(doctype.IsSealed, Is.EqualTo(false), "IsSealed");
             Assert.That(doctype.IsValueType, Is.EqualTo(false), "IsValueType");
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(EnumDemo).FullName));
 
             Assert.That(doctype.IsAbstract, Is.EqualTo(false), "IsAbstract");
@@ -120,6 +121,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(typeof(EnumDemo));
+            Assert.IsFalse(pct.HasError);
 
             var doctype = pct.TypeDocumentations.First();
 
@@ -139,20 +141,21 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromAssembly(typeof(EnumWithObsoleteDemo).Assembly);
+            Assert.IsFalse(pct.HasError);
 
-            var doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(EnumWithObsoleteDemo).FullName));
 
             var field = doctype.Fields.First(f => f.Name == "C");
             Assert.That(field.Obsolete.Message, Is.EqualTo("Use B instead"));
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(ObsoleteClassDemo).FullName));
 
             Assert.That(doctype.Obsolete.Message, Is.EqualTo("Use ClassDemo instead"));
             Assert.That(doctype.Properties.First().Obsolete, Is.EqualTo(null));
 
-            doctype = pct.TypeDocumentations.First(t => t.FullName.Equals(
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(OtherClassDemo).FullName));
 
             var property = doctype.Properties.First(f => f.Name == "PropString");
@@ -183,6 +186,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(typeof(StaticDemo));
+            Assert.IsFalse(pct.HasError);
 
             var doctype = pct.TypeDocumentations.First();
 

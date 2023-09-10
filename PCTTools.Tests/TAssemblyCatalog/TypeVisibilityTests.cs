@@ -13,9 +13,9 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromAssembly(typeof(NestedPublic).Assembly);
-            var namespac = typeof(NestedPublic).Namespace;
+            Assert.IsFalse(pct.HasError);
 
-            var doctypes = pct.TypeDocumentations.Where(t => t.FullName.Contains(".Nested."));
+            var doctypes = pct.TypeDocumentations.Where(t => t.Name.Contains(".Nested."));
             // Should only get NestedPublic and NestedPublic+NeastedPublicSubPublic
             Assert.That(doctypes.Count, Is.EqualTo(2));
         }
