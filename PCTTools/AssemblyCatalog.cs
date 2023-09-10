@@ -71,12 +71,12 @@ namespace PCTTools
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="logAssembly"></param>
-        /// <param name="logType"></param>
-        public void SetWriter(TextWriter writer, bool logAssembly, bool logType)
+        /// <param name="logTypes"></param>
+        public void SetWriter(TextWriter writer, bool logAssembly, bool logTypes)
         {
             this.writer = writer;
             this.logAssembly = logAssembly;
-            this.logTypes = logType;
+            this.logTypes = logTypes;
         }
         /// <summary>
         /// Define a Writer to log things
@@ -85,6 +85,7 @@ namespace PCTTools
         public void SetWriter(TextWriter writer)
         {
             this.writer = writer;
+            this.logAssembly = true;
         }
 
         /// <summary>
