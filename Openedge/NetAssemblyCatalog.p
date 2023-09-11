@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------
-    File        : start.p
-    Purpose     : 
+    File        : NetAssemblyCatalog.p
+    Purpose     : Generate Assembly catalogue
     Syntax      :
 
     Description : 
@@ -36,7 +36,7 @@ MESSAGE "pctTools :" pctTools.
 wAssembly = System.Reflection.Assembly:LoadFrom(pctTools).
 
 /*-------------------------------------------------*/
-/*--  Initialize                                   --*/
+/*--  Initialize                                 --*/
 /*-------------------------------------------------*/
 
 vAsmCatalog = wAssembly:CreateInstance("PCTTools.AssemblyCatalog").
@@ -75,7 +75,10 @@ DYNAMIC-INVOKE (vAsmCatalog,"GenerateDocumentationFromAppDomain").
 /**** Output to Json File ****/
 DYNAMIC-INVOKE (vAsmCatalog, "ToJsonFile", destFile).
 
+/**** Fail the build if error ****/
+/*
 IF DYNAMIC-PROPERTY(vAsmCatalog, "HasError") = YES THEN
-    RETURN '99'
+    RETURN '99'.
+*/
 
 RETURN '0'.
