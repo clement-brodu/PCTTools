@@ -21,6 +21,7 @@ Improvements:
 - provide fields
 - provide enum values as fields
 - provide constructors
+- provide event handler types and invoke signatures
 - allow to scan only one type or one assembly
 - catalog file without default values
 
@@ -29,7 +30,7 @@ Usage with ANT:
 ```xml
 <PCTRUn 
     dlcHome="${DLC}" 
-    assemblies="path/to/dir/with/assemblies.xml" destFile="catalog.json"
+    assemblies="path/to/dir/with/assemblies.xml"
     procedure="Openedge/NetAssemblyCatalog.p" >
   <propath>
     <!-- Add Propath for the PCTTextWriter-->
