@@ -12,6 +12,7 @@ using System.ComponentModel;
 using Newtonsoft.Json.Serialization;
 using PCTTools.Extensions;
 using PCTTools.Model;
+using Newtonsoft.Json.Linq;
 
 namespace PCTTools
 {
@@ -214,6 +215,7 @@ namespace PCTTools
         /// <param name="withInherited">include inherited member in doc</param>
         internal void AddTypeToList(Type type, bool withInherited)
         {
+            var isDelegate = typeof(System.Delegate).IsAssignableFrom(type);
             var typeDocumentation = new TypeDocumentation
             {
                 ShortName = type.GetFormattedName(),
@@ -227,13 +229,18 @@ namespace PCTTools
                 IsGeneric = type.IsGenericType,
                 IsNested = type.IsNested,
                 BaseTypes = GetBaseTypes(type),
-                Constructors = GetConstructors(type),
-                Methods = GetMethods(type, withInherited),
-                Properties = GetProperties(type, withInherited),
-                Events = GetEvents(type, withInherited),
-                Fields = GetFields(type, withInherited),
+                Methods = GetMethods(type, withInherited, isDelegate),
                 Obsolete = type.GetObsolete()
             };
+
+            if (!isDelegate)
+            {
+                // useless information for delegate
+                typeDocumentation.Constructors = GetConstructors(type);
+                typeDocumentation.Properties = GetProperties(type, withInherited);
+                typeDocumentation.Fields = GetFields(type, withInherited);
+            }
+
 
             TypeDocumentations.Add(typeDocumentation);
 
@@ -242,6 +249,9 @@ namespace PCTTools
             {
                 AddTypeToList(nested, withInherited);
             }
+
+            // scan events after add to list
+            typeDocumentation.Events = GetEvents(type, withInherited);
         }
 
         /// <summary>
@@ -269,7 +279,7 @@ namespace PCTTools
         /// <param name="type">Type</param>
         /// <param name="withInherited">include inherited member in doc</param>
         /// <returns></returns>
-        internal List<MethodDocumentation> GetMethods(Type type, bool withInherited = false)
+        internal List<MethodDocumentation> GetMethods(Type type, bool withInherited = false, bool invokeOnly = false)
         {
             var bind = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
             if (!withInherited)
@@ -277,7 +287,9 @@ namespace PCTTools
                 bind |= BindingFlags.DeclaredOnly;
             }
             return type.GetMethods(bind)
-                .Where(method => !method.IsSpecialName && method.IsMethodPublicOrProtected(PublicOnly))
+                .Where(method => !method.IsSpecialName
+                                && method.IsMethodPublicOrProtected(PublicOnly)
+                                && (!invokeOnly || method.Name.Equals("Invoke")))
                 .Select(method => new MethodDocumentation
                 {
                     Name = method.Name,
@@ -396,15 +408,22 @@ namespace PCTTools
             }
             return type.GetEvents(bind)
                 .Where(e => MemberInfoExtensions.IsMethodPublicOrProtected(e.AddMethod ?? e.RemoveMethod, PublicOnly))
-                .Select(e => new EventDocumentation
+                .Select(e =>
                 {
-                    Name = e.Name,
-                    EventType = e.EventHandlerType.GetFormattedFullName(UseOeTypes),
-                    DelegateReturnType = e.EventHandlerType.GetMethod("Invoke").ReturnType.GetFormattedFullName(UseOeTypes),
-                    DelegateParameters = GetParameters(e.EventHandlerType.GetMethod("Invoke")),
-                    Obsolete = e.GetObsolete(),
-                    IsStatic = e.AddMethod?.IsStatic == true && e.RemoveMethod?.IsStatic == true,
-                    IsPublic = e.AddMethod?.IsPublic ?? e.RemoveMethod?.IsPublic ?? false
+                    //TypeDocumentations
+                    var eventType = e.EventHandlerType.GetFormattedFullName(UseOeTypes);
+                    if (!TypeDocumentations.Any(t => t.Name.Equals(eventType)))
+                    {
+                        AddTypeToList(e.EventHandlerType, withInherited);
+                    }
+                    return new EventDocumentation
+                    {
+                        Name = e.Name,
+                        EventType = eventType,
+                        Obsolete = e.GetObsolete(),
+                        IsStatic = e.AddMethod?.IsStatic == true && e.RemoveMethod?.IsStatic == true,
+                        IsPublic = e.AddMethod?.IsPublic ?? e.RemoveMethod?.IsPublic ?? false
+                    };
                 })
                 .ToList();
         }

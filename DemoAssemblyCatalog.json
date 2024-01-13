@@ -121,48 +121,15 @@
     "events": [
       {
         "name": "CustomEvent",
-        "eventType": "PCTToolsApp.DemoAssemblyCatalog+DemoDelegate",
-        "delegateReturnType": "VOID",
-        "delegateParameters": [
-          {
-            "name": "s",
-            "type": "CHARACTER"
-          },
-          {
-            "name": "i",
-            "type": "INTEGER"
-          }
-        ]
+        "eventType": "PCTToolsApp.DemoAssemblyCatalog+DemoDelegate"
       },
       {
         "name": "Validating",
-        "eventType": "System.ComponentModel.CancelEventHandler",
-        "delegateReturnType": "VOID",
-        "delegateParameters": [
-          {
-            "name": "sender",
-            "type": "System.Object"
-          },
-          {
-            "name": "e",
-            "type": "System.ComponentModel.CancelEventArgs"
-          }
-        ]
+        "eventType": "System.ComponentModel.CancelEventHandler"
       },
       {
         "name": "StaticValidating",
         "eventType": "System.ComponentModel.CancelEventHandler",
-        "delegateReturnType": "VOID",
-        "delegateParameters": [
-          {
-            "name": "sender",
-            "type": "System.Object"
-          },
-          {
-            "name": "e",
-            "type": "System.ComponentModel.CancelEventArgs"
-          }
-        ],
         "isStatic": true
       }
     ],
@@ -188,21 +155,6 @@
     "isClass": true,
     "isSealed": true,
     "isNested": true,
-    "constructors": [
-      {
-        "name": ".ctor",
-        "parameters": [
-          {
-            "name": "object",
-            "type": "System.Object"
-          },
-          {
-            "name": "method",
-            "type": "System.IntPtr"
-          }
-        ]
-      }
-    ],
     "methods": [
       {
         "name": "Invoke",
@@ -217,42 +169,35 @@
             "type": "INTEGER"
           }
         ]
-      },
+      }
+    ],
+    "events": []
+  },
+  {
+    "name": "System.ComponentModel.CancelEventHandler",
+    "baseTypes": [
+      "System.MulticastDelegate",
+      "System.Delegate",
+      "System.Object"
+    ],
+    "isClass": true,
+    "isSealed": true,
+    "methods": [
       {
-        "name": "BeginInvoke",
-        "returnType": "System.IAsyncResult",
-        "parameters": [
-          {
-            "name": "s",
-            "type": "CHARACTER"
-          },
-          {
-            "name": "i",
-            "type": "INTEGER"
-          },
-          {
-            "name": "callback",
-            "type": "System.AsyncCallback"
-          },
-          {
-            "name": "object",
-            "type": "System.Object"
-          }
-        ]
-      },
-      {
-        "name": "EndInvoke",
+        "name": "Invoke",
         "returnType": "VOID",
         "parameters": [
           {
-            "name": "result",
-            "type": "System.IAsyncResult"
+            "name": "sender",
+            "type": "System.Object"
+          },
+          {
+            "name": "e",
+            "type": "System.ComponentModel.CancelEventArgs"
           }
         ]
       }
     ],
-    "properties": [],
-    "events": [],
-    "fields": []
+    "events": []
   }
 ]

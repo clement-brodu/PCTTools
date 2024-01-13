@@ -7,8 +7,6 @@ namespace PCTTools.Model
     {
         public string Name { get; set; }
         public string EventType { get; set; }
-        public string DelegateReturnType { get; set; }
-        public List<ParameterDocumentation> DelegateParameters { get; set; }
         public ObsoleteDocumentation Obsolete { get; set; }
         [DefaultValue(false)]
         public bool IsStatic { get; set; }

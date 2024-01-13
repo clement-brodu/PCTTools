@@ -188,7 +188,8 @@ namespace PCTTools.Tests.TAssemblyCatalog
             pct.GenerateDocumentationFromType(typeof(StaticDemo));
             Assert.IsFalse(pct.HasError);
 
-            var doctype = pct.TypeDocumentations.First();
+            var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
+                typeof(StaticDemo).FullName));
 
             var field = doctype.Fields.First(f => f.Name == "FieldStaticString");
             Assert.That(field.IsStatic, Is.EqualTo(true));
@@ -212,6 +213,25 @@ namespace PCTTools.Tests.TAssemblyCatalog
             method = doctype.Methods.First(f => f.Name == "GetString");
             Assert.That(method.IsStatic, Is.EqualTo(false));
 
+        }
+
+        [Test()]
+        public void EventsTest()
+        {
+            var pct = new AssemblyCatalog();
+
+            pct.GenerateDocumentationFromType(typeof(EventsDemo));
+            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.TypeDocumentations.Count, Is.EqualTo(4));
+
+            var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
+                typeof(EventsDemo).FullName));
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
+                typeof(EventsDemo.DemoHandler).FullName));
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
+                typeof(EventHandler<AssemblyLoadEventArgs>).GetFormattedFullName()));
+            doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
+                typeof(EventHandler).FullName));
         }
     }
 }

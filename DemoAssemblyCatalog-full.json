@@ -177,19 +177,6 @@
       {
         "name": "CustomEvent",
         "eventType": "PCTToolsApp.DemoAssemblyCatalog+DemoDelegate",
-        "delegateReturnType": "VOID",
-        "delegateParameters": [
-          {
-            "isOut": false,
-            "name": "s",
-            "type": "CHARACTER"
-          },
-          {
-            "isOut": false,
-            "name": "i",
-            "type": "INTEGER"
-          }
-        ],
         "obsolete": null,
         "isStatic": false,
         "isPublic": true
@@ -197,19 +184,6 @@
       {
         "name": "Validating",
         "eventType": "System.ComponentModel.CancelEventHandler",
-        "delegateReturnType": "VOID",
-        "delegateParameters": [
-          {
-            "isOut": false,
-            "name": "sender",
-            "type": "System.Object"
-          },
-          {
-            "isOut": false,
-            "name": "e",
-            "type": "System.ComponentModel.CancelEventArgs"
-          }
-        ],
         "obsolete": null,
         "isStatic": false,
         "isPublic": true
@@ -217,19 +191,6 @@
       {
         "name": "StaticValidating",
         "eventType": "System.ComponentModel.CancelEventHandler",
-        "delegateReturnType": "VOID",
-        "delegateParameters": [
-          {
-            "isOut": false,
-            "name": "sender",
-            "type": "System.Object"
-          },
-          {
-            "isOut": false,
-            "name": "e",
-            "type": "System.ComponentModel.CancelEventArgs"
-          }
-        ],
         "obsolete": null,
         "isStatic": true,
         "isPublic": true
@@ -267,26 +228,7 @@
     "isSealed": true,
     "isGeneric": false,
     "isNested": true,
-    "constructors": [
-      {
-        "name": ".ctor",
-        "parameters": [
-          {
-            "isOut": false,
-            "name": "object",
-            "type": "System.Object"
-          },
-          {
-            "isOut": false,
-            "name": "method",
-            "type": "System.IntPtr"
-          }
-        ],
-        "obsolete": null,
-        "isStatic": false,
-        "isPublic": true
-      }
-    ],
+    "constructors": null,
     "methods": [
       {
         "name": "Invoke",
@@ -306,44 +248,42 @@
         "obsolete": null,
         "isStatic": false,
         "isPublic": true
-      },
+      }
+    ],
+    "properties": null,
+    "events": [],
+    "fields": null,
+    "obsolete": null
+  },
+  {
+    "name": "System.ComponentModel.CancelEventHandler",
+    "baseTypes": [
+      "System.MulticastDelegate",
+      "System.Delegate",
+      "System.Object"
+    ],
+    "isClass": true,
+    "isInterface": false,
+    "isEnum": false,
+    "isAbstract": false,
+    "isSealed": true,
+    "isGeneric": false,
+    "isNested": false,
+    "constructors": null,
+    "methods": [
       {
-        "name": "BeginInvoke",
-        "returnType": "System.IAsyncResult",
-        "parameters": [
-          {
-            "isOut": false,
-            "name": "s",
-            "type": "CHARACTER"
-          },
-          {
-            "isOut": false,
-            "name": "i",
-            "type": "INTEGER"
-          },
-          {
-            "isOut": false,
-            "name": "callback",
-            "type": "System.AsyncCallback"
-          },
-          {
-            "isOut": false,
-            "name": "object",
-            "type": "System.Object"
-          }
-        ],
-        "obsolete": null,
-        "isStatic": false,
-        "isPublic": true
-      },
-      {
-        "name": "EndInvoke",
+        "name": "Invoke",
         "returnType": "VOID",
         "parameters": [
           {
             "isOut": false,
-            "name": "result",
-            "type": "System.IAsyncResult"
+            "name": "sender",
+            "type": "System.Object"
+          },
+          {
+            "isOut": false,
+            "name": "e",
+            "type": "System.ComponentModel.CancelEventArgs"
           }
         ],
         "obsolete": null,
@@ -351,9 +291,9 @@
         "isPublic": true
       }
     ],
-    "properties": [],
+    "properties": null,
     "events": [],
-    "fields": [],
+    "fields": null,
     "obsolete": null
   }
 ]
