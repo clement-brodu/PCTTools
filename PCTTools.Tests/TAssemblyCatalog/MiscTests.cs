@@ -233,5 +233,20 @@ namespace PCTTools.Tests.TAssemblyCatalog
             doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(EventHandler).FullName));
         }
+
+        [Test()]
+        public void OutputParametersTest()
+        {
+            var pct = new AssemblyCatalog();
+
+            pct.GenerateDocumentationFromType(typeof(System.AppContext));
+            Assert.IsFalse(pct.HasError);
+
+            var method = pct.TypeDocumentations.First().Methods.First(m => m.Name == "TryGetSwitch");
+            Assert.That(method.IsStatic, Is.EqualTo(true));
+            var parameter = method.Parameters.First(p => p.Name == "isEnabled");
+            Assert.That(parameter.IsOut, Is.EqualTo(true));
+            Assert.That(parameter.Type, Is.EqualTo("System.Boolean"));
+        }
     }
 }

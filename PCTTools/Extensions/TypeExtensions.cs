@@ -1,9 +1,6 @@
 ﻿using PCTTools.Util;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml.Linq;
 
 namespace PCTTools.Extensions
 {
@@ -18,21 +15,26 @@ namespace PCTTools.Extensions
         /// <returns>System.String.</returns>
         public static string GetFormattedName(this Type type, bool useOeTypes = false)
         {
-            if (type.IsGenericType && type.Name.Contains("`"))
+            var name = type.Name;
+            if (name.EndsWith("&"))
+            {
+                name = name.Substring(0, name.Length - 1);
+            }
+            if (type.IsGenericType && name.Contains("`"))
             {
                 string genericArguments = type.GetGenericArguments()
                                     .Select(x => x.GetFormattedName())
                                     .Aggregate((x1, x2) => $"{x1}, {x2}");
-                return $"{type.Name.Substring(0, type.Name.IndexOf("`"))}"
+                return $"{name.Substring(0, name.IndexOf("`"))}"
                      + $"<{genericArguments}>";
             }
 
             if (useOeTypes)
             {
-                return OeTypeUtil.ToOeFormatedType(type) ?? type.Name;
+                return OeTypeUtil.ToOeFormatedType(type) ?? name;
             }
 
-            return type.Name;
+            return name;
         }
 
         /// <summary>
@@ -45,6 +47,10 @@ namespace PCTTools.Extensions
         public static string GetFormattedFullName(this Type type, bool useOeTypes = false)
         {
             var name = type.FullName ?? (type.IsGenericParameter ? type.Name : $"{type.Namespace}.{type.Name}");
+            if (name.EndsWith("&"))
+            {
+                name = name.Substring(0, name.Length - 1);
+            }
             if (type.IsGenericType && type.Name.Contains("`") && name != null)
             {
                 string genericArguments = type.GetGenericArguments()

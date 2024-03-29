@@ -113,9 +113,9 @@
             "type": "LOGICAL"
           },
           {
-            "isOut": false,
+            "isOut": true,
             "name": "dateTime",
-            "type": "System.DateTime&"
+            "type": "System.DateTime"
           }
         ],
         "obsolete": null,

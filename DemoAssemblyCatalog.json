@@ -84,8 +84,9 @@
             "type": "LOGICAL"
           },
           {
+            "isOut": true,
             "name": "dateTime",
-            "type": "System.DateTime&"
+            "type": "System.DateTime"
           }
         ],
         "isStatic": true

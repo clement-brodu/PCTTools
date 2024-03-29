@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using System.Xml.Serialization;
-using System.Xml;
-using Newtonsoft.Json;
-using System.Linq;
-using System.IO;
-using Formatting = Newtonsoft.Json.Formatting;
-using System.ComponentModel;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using PCTTools.Extensions;
 using PCTTools.Model;
-using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace PCTTools
 {
@@ -314,7 +309,8 @@ namespace PCTTools
                                     .Select(param => new ParameterDocumentation
                                     {
                                         Name = param.Name,
-                                        Type = param.ParameterType.GetFormattedFullName(UseOeTypes)
+                                        Type = param.ParameterType.GetFormattedFullName(UseOeTypes),
+                                        IsOut = param.IsOut
                                     })
                                     .ToList();
         }
