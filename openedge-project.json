@@ -1,0 +1,19 @@
+{
+  "name": "com.pnv.std.pl.core",
+  "version": "SNAPSHOT",
+  "oeversion": "12.4",
+  "graphicalMode": true,
+  "charset": "utf8",
+  "extraParameters": "",
+  "buildPath": [
+    { "type": "source", "path": "Openedge/" },
+    { "type": "propath", "path": "Openedge/" },
+    { "type": "propath", "path": "${DLC}/gui/OpenEdge.Core.pl" }
+  ],
+  "buildDirectory": "Obj",
+  "dbConnections": [
+  ],
+  "numThreads": 1,
+  "procedures": [],
+  "profiles": []
+}
