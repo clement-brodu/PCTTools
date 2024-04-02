@@ -21,12 +21,12 @@
           "name": ".ctor",
           "parameters": [
             {
-              "isOut": false,
+              "mode": "I",
               "name": "path",
               "type": "CHARACTER"
             },
             {
-              "isOut": false,
+              "mode": "I",
               "name": "append",
               "type": "LOGICAL"
             }
@@ -53,14 +53,38 @@
           "returnType": "CHARACTER",
           "parameters": [
             {
-              "isOut": false,
+              "mode": "I",
               "name": "name",
               "type": "CHARACTER"
             },
             {
-              "isOut": false,
+              "mode": "I",
               "name": "othername",
               "type": "CHARACTER"
+            }
+          ],
+          "obsolete": null,
+          "isStatic": false,
+          "isPublic": true
+        },
+        {
+          "name": "GetMyPropertyWithInputOutput",
+          "returnType": "CHARACTER",
+          "parameters": [
+            {
+              "mode": "I",
+              "name": "hello",
+              "type": "INTEGER"
+            },
+            {
+              "mode": "IO",
+              "name": "name",
+              "type": "System.String"
+            },
+            {
+              "mode": "O",
+              "name": "othername",
+              "type": "System.String"
             }
           ],
           "obsolete": null,
@@ -72,12 +96,12 @@
           "returnType": "CHARACTER",
           "parameters": [
             {
-              "isOut": false,
+              "mode": "I",
               "name": "list",
               "type": "System.Collections.Generic.List<System.Int32>"
             },
             {
-              "isOut": false,
+              "mode": "I",
               "name": "dico",
               "type": "System.Collections.Generic.Dictionary<System.Int32, System.String>"
             }
@@ -91,12 +115,12 @@
           "returnType": "DATETIME",
           "parameters": [
             {
-              "isOut": false,
+              "mode": "I",
               "name": "isToday",
               "type": "LOGICAL"
             },
             {
-              "isOut": false,
+              "mode": "I",
               "name": "currentYear",
               "type": "INTEGER"
             }
@@ -110,12 +134,12 @@
           "returnType": "LOGICAL",
           "parameters": [
             {
-              "isOut": false,
+              "mode": "I",
               "name": "isToday",
               "type": "LOGICAL"
             },
             {
-              "isOut": true,
+              "mode": "O",
               "name": "dateTime",
               "type": "System.DateTime"
             }
@@ -237,12 +261,12 @@
           "returnType": "VOID",
           "parameters": [
             {
-              "isOut": false,
+              "mode": "I",
               "name": "s",
               "type": "CHARACTER"
             },
             {
-              "isOut": false,
+              "mode": "I",
               "name": "i",
               "type": "INTEGER"
             }
@@ -278,12 +302,12 @@
           "returnType": "VOID",
           "parameters": [
             {
-              "isOut": false,
+              "mode": "I",
               "name": "sender",
               "type": "System.Object"
             },
             {
-              "isOut": false,
+              "mode": "I",
               "name": "e",
               "type": "System.ComponentModel.CancelEventArgs"
             }
