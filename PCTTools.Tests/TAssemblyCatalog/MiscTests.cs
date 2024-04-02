@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using PCTTools.Extensions;
+using PCTTools.Model.Enums;
 using PCTTools.Sample.SAssemblyCatalog.Misc;
 using PCTTools.Sample.SAssemblyCatalog.Nested;
 using static PCTTools.Sample.SAssemblyCatalog.Misc.ClassDemo;
@@ -239,14 +240,20 @@ namespace PCTTools.Tests.TAssemblyCatalog
         {
             var pct = new AssemblyCatalog();
 
-            pct.GenerateDocumentationFromType(typeof(System.AppContext));
+            pct.GenerateDocumentationFromType(typeof(MethodDemo));
             Assert.IsFalse(pct.HasError);
 
-            var method = pct.TypeDocumentations.First().Methods.First(m => m.Name == "TryGetSwitch");
-            Assert.That(method.IsStatic, Is.EqualTo(true));
-            var parameter = method.Parameters.First(p => p.Name == "isEnabled");
-            Assert.That(parameter.IsOut, Is.EqualTo(true));
+            var method = pct.TypeDocumentations.First().Methods.First(m => m.Name == "GetMyInfo");
+            Assert.That(method.IsStatic, Is.EqualTo(false));
+            var parameter = method.Parameters.First(p => p.Name == "hello");
+            Assert.That(parameter.Mode, Is.EqualTo(ParameterMode.INPUT));
+            Assert.That(parameter.Type, Is.EqualTo("System.Int32"));
+            parameter = method.Parameters.First(p => p.Name == "allow");
+            Assert.That(parameter.Mode, Is.EqualTo(ParameterMode.INPUTOUTPUT));
             Assert.That(parameter.Type, Is.EqualTo("System.Boolean"));
+            parameter = method.Parameters.First(p => p.Name == "name");
+            Assert.That(parameter.Mode, Is.EqualTo(ParameterMode.OUTPUT));
+            Assert.That(parameter.Type, Is.EqualTo("System.String"));
         }
     }
 }

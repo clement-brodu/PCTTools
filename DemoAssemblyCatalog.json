@@ -49,6 +49,26 @@
           ]
         },
         {
+          "name": "GetMyPropertyWithInputOutput",
+          "returnType": "CHARACTER",
+          "parameters": [
+            {
+              "name": "hello",
+              "type": "INTEGER"
+            },
+            {
+              "mode": "IO",
+              "name": "name",
+              "type": "System.String"
+            },
+            {
+              "mode": "O",
+              "name": "othername",
+              "type": "System.String"
+            }
+          ]
+        },
+        {
           "name": "DoSomething",
           "returnType": "CHARACTER",
           "parameters": [
@@ -86,7 +106,7 @@
               "type": "LOGICAL"
             },
             {
-              "isOut": true,
+              "mode": "O",
               "name": "dateTime",
               "type": "System.DateTime"
             }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace PCTToolsApp
 {
@@ -35,6 +30,12 @@ namespace PCTToolsApp
 
         public string GetMyProperty(string name, string othername)
         {
+            return MyProperty;
+        }
+
+        public string GetMyPropertyWithInputOutput(int hello, ref string name, out string othername)
+        {
+            othername = "";
             return MyProperty;
         }
 

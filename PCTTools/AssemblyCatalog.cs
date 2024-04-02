@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using PCTTools.Extensions;
 using PCTTools.Model;
+using PCTTools.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -322,9 +323,26 @@ namespace PCTTools
                                     {
                                         Name = param.Name,
                                         Type = param.ParameterType.GetFormattedFullName(UseOeTypes),
-                                        IsOut = param.IsOut
+                                        Mode = GetParameterMode(param)
                                     })
                                     .ToList();
+        }
+
+        /// <summary>
+        /// Return the parameter mode
+        /// </summary>
+        /// <param name="parameterInfo"></param>
+        /// <returns></returns>
+        internal ParameterMode GetParameterMode(ParameterInfo parameterInfo)
+        {
+            if (parameterInfo.ParameterType.Name.EndsWith("&"))
+            {
+                if (parameterInfo.IsOut)
+                    return ParameterMode.OUTPUT;
+                else
+                    return ParameterMode.INPUTOUTPUT;
+            }
+            return ParameterMode.INPUT;
         }
 
         /// <summary>
