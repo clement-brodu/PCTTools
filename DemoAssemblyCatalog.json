@@ -1,204 +1,207 @@
-[
-  {
-    "name": "PCTToolsApp.DemoAssemblyCatalog",
-    "baseTypes": [
-      "System.IO.StreamWriter",
-      "System.IO.TextWriter",
-      "System.MarshalByRefObject",
-      "System.Object"
-    ],
-    "isClass": true,
-    "constructors": [
-      {
-        "name": ".ctor",
-        "parameters": [
-          {
-            "name": "path",
-            "type": "CHARACTER"
-          },
-          {
-            "name": "append",
-            "type": "LOGICAL"
-          }
-        ]
-      }
-    ],
-    "methods": [
-      {
-        "name": "GetMyProperty",
-        "returnType": "CHARACTER",
-        "parameters": [],
-        "obsolete": {
-          "message": "Use other GetMyProperty instead"
+{
+  "schemaVersion": 1,
+  "classes": [
+    {
+      "name": "PCTToolsApp.DemoAssemblyCatalog",
+      "baseTypes": [
+        "System.IO.StreamWriter",
+        "System.IO.TextWriter",
+        "System.MarshalByRefObject",
+        "System.Object"
+      ],
+      "isClass": true,
+      "constructors": [
+        {
+          "name": ".ctor",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "CHARACTER"
+            },
+            {
+              "name": "append",
+              "type": "LOGICAL"
+            }
+          ]
         }
-      },
-      {
-        "name": "GetMyProperty",
-        "returnType": "CHARACTER",
-        "parameters": [
-          {
-            "name": "name",
-            "type": "CHARACTER"
-          },
-          {
-            "name": "othername",
-            "type": "CHARACTER"
+      ],
+      "methods": [
+        {
+          "name": "GetMyProperty",
+          "returnType": "CHARACTER",
+          "parameters": [],
+          "obsolete": {
+            "message": "Use other GetMyProperty instead"
           }
-        ]
-      },
-      {
-        "name": "DoSomething",
-        "returnType": "CHARACTER",
-        "parameters": [
-          {
-            "name": "list",
-            "type": "System.Collections.Generic.List<System.Int32>"
-          },
-          {
-            "name": "dico",
-            "type": "System.Collections.Generic.Dictionary<System.Int32, System.String>"
-          }
-        ]
-      },
-      {
-        "name": "GetMyDate",
-        "returnType": "DATETIME",
-        "parameters": [
-          {
-            "name": "isToday",
-            "type": "LOGICAL"
-          },
-          {
-            "name": "currentYear",
-            "type": "INTEGER"
-          }
-        ],
-        "isStatic": true
-      },
-      {
-        "name": "TryGetMyDate",
-        "returnType": "LOGICAL",
-        "parameters": [
-          {
-            "name": "isToday",
-            "type": "LOGICAL"
-          },
-          {
-            "isOut": true,
-            "name": "dateTime",
-            "type": "System.DateTime"
-          }
-        ],
-        "isStatic": true
-      }
-    ],
-    "properties": [
-      {
-        "name": "MyProperty",
-        "type": "CHARACTER"
-      },
-      {
-        "name": "MyProtectedProperty",
-        "type": "CHARACTER",
-        "isPublic": false
-      },
-      {
-        "name": "MyObsoletProperty",
-        "type": "CHARACTER",
-        "obsolete": {
-          "message": "Use MyProperty instead"
+        },
+        {
+          "name": "GetMyProperty",
+          "returnType": "CHARACTER",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "CHARACTER"
+            },
+            {
+              "name": "othername",
+              "type": "CHARACTER"
+            }
+          ]
+        },
+        {
+          "name": "DoSomething",
+          "returnType": "CHARACTER",
+          "parameters": [
+            {
+              "name": "list",
+              "type": "System.Collections.Generic.List<System.Int32>"
+            },
+            {
+              "name": "dico",
+              "type": "System.Collections.Generic.Dictionary<System.Int32, System.String>"
+            }
+          ]
+        },
+        {
+          "name": "GetMyDate",
+          "returnType": "DATETIME",
+          "parameters": [
+            {
+              "name": "isToday",
+              "type": "LOGICAL"
+            },
+            {
+              "name": "currentYear",
+              "type": "INTEGER"
+            }
+          ],
+          "isStatic": true
+        },
+        {
+          "name": "TryGetMyDate",
+          "returnType": "LOGICAL",
+          "parameters": [
+            {
+              "name": "isToday",
+              "type": "LOGICAL"
+            },
+            {
+              "isOut": true,
+              "name": "dateTime",
+              "type": "System.DateTime"
+            }
+          ],
+          "isStatic": true
         }
-      },
-      {
-        "name": "MyList",
-        "type": "System.Collections.Generic.List<System.Int32>"
-      },
-      {
-        "name": "StaticProperty",
-        "type": "CHARACTER",
-        "isStatic": true
-      }
-    ],
-    "events": [
-      {
-        "name": "CustomEvent",
-        "eventType": "PCTToolsApp.DemoAssemblyCatalog+DemoDelegate"
-      },
-      {
-        "name": "Validating",
-        "eventType": "System.ComponentModel.CancelEventHandler"
-      },
-      {
-        "name": "StaticValidating",
-        "eventType": "System.ComponentModel.CancelEventHandler",
-        "isStatic": true
-      }
-    ],
-    "fields": [
-      {
-        "name": "MyField",
-        "type": "CHARACTER"
-      },
-      {
-        "name": "MyStaticField",
-        "type": "CHARACTER",
-        "isStatic": true
-      }
-    ]
-  },
-  {
-    "name": "PCTToolsApp.DemoAssemblyCatalog+DemoDelegate",
-    "baseTypes": [
-      "System.MulticastDelegate",
-      "System.Delegate",
-      "System.Object"
-    ],
-    "isClass": true,
-    "isSealed": true,
-    "isNested": true,
-    "methods": [
-      {
-        "name": "Invoke",
-        "returnType": "VOID",
-        "parameters": [
-          {
-            "name": "s",
-            "type": "CHARACTER"
-          },
-          {
-            "name": "i",
-            "type": "INTEGER"
+      ],
+      "properties": [
+        {
+          "name": "MyProperty",
+          "type": "CHARACTER"
+        },
+        {
+          "name": "MyProtectedProperty",
+          "type": "CHARACTER",
+          "isPublic": false
+        },
+        {
+          "name": "MyObsoletProperty",
+          "type": "CHARACTER",
+          "obsolete": {
+            "message": "Use MyProperty instead"
           }
-        ]
-      }
-    ],
-    "events": []
-  },
-  {
-    "name": "System.ComponentModel.CancelEventHandler",
-    "baseTypes": [
-      "System.MulticastDelegate",
-      "System.Delegate",
-      "System.Object"
-    ],
-    "isClass": true,
-    "isSealed": true,
-    "methods": [
-      {
-        "name": "Invoke",
-        "returnType": "VOID",
-        "parameters": [
-          {
-            "name": "sender",
-            "type": "System.Object"
-          },
-          {
-            "name": "e",
-            "type": "System.ComponentModel.CancelEventArgs"
-          }
-        ]
-      }
-    ],
-    "events": []
-  }
-]
+        },
+        {
+          "name": "MyList",
+          "type": "System.Collections.Generic.List<System.Int32>"
+        },
+        {
+          "name": "StaticProperty",
+          "type": "CHARACTER",
+          "isStatic": true
+        }
+      ],
+      "events": [
+        {
+          "name": "CustomEvent",
+          "eventType": "PCTToolsApp.DemoAssemblyCatalog+DemoDelegate"
+        },
+        {
+          "name": "Validating",
+          "eventType": "System.ComponentModel.CancelEventHandler"
+        },
+        {
+          "name": "StaticValidating",
+          "eventType": "System.ComponentModel.CancelEventHandler",
+          "isStatic": true
+        }
+      ],
+      "fields": [
+        {
+          "name": "MyField",
+          "type": "CHARACTER"
+        },
+        {
+          "name": "MyStaticField",
+          "type": "CHARACTER",
+          "isStatic": true
+        }
+      ]
+    },
+    {
+      "name": "PCTToolsApp.DemoAssemblyCatalog+DemoDelegate",
+      "baseTypes": [
+        "System.MulticastDelegate",
+        "System.Delegate",
+        "System.Object"
+      ],
+      "isClass": true,
+      "isSealed": true,
+      "isNested": true,
+      "methods": [
+        {
+          "name": "Invoke",
+          "returnType": "VOID",
+          "parameters": [
+            {
+              "name": "s",
+              "type": "CHARACTER"
+            },
+            {
+              "name": "i",
+              "type": "INTEGER"
+            }
+          ]
+        }
+      ],
+      "events": []
+    },
+    {
+      "name": "System.ComponentModel.CancelEventHandler",
+      "baseTypes": [
+        "System.MulticastDelegate",
+        "System.Delegate",
+        "System.Object"
+      ],
+      "isClass": true,
+      "isSealed": true,
+      "methods": [
+        {
+          "name": "Invoke",
+          "returnType": "VOID",
+          "parameters": [
+            {
+              "name": "sender",
+              "type": "System.Object"
+            },
+            {
+              "name": "e",
+              "type": "System.ComponentModel.CancelEventArgs"
+            }
+          ]
+        }
+      ],
+      "events": []
+    }
+  ]
+}

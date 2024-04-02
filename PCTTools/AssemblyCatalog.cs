@@ -100,8 +100,14 @@ namespace PCTTools
                 NullValueHandling = NullValueHandling.Ignore,
                 ContractResolver = contractResolver
             };
+
+            var result = new TypeDocumentationFile()
+            {
+                Classes = TypeDocumentations
+            };
+
             // Convert to Json
-            string json = JsonConvert.SerializeObject(TypeDocumentations, Formatting.Indented, jsonSettings);
+            string json = JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings);
 
             // Write to file
             File.WriteAllText(path, json);
@@ -118,8 +124,14 @@ namespace PCTTools
 
                 ContractResolver = contractResolver
             };
+
+            var result = new TypeDocumentationFile()
+            {
+                Classes = TypeDocumentations
+            };
+
             // Convert to Json
-            string json = JsonConvert.SerializeObject(TypeDocumentations, Formatting.Indented, jsonSettings);
+            string json = JsonConvert.SerializeObject(result, Formatting.Indented, jsonSettings);
 
             // Write to file
             File.WriteAllText(path, json);
