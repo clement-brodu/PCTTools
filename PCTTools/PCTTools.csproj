@@ -9,6 +9,22 @@
     <!-- Force AssemblyVersion to stay at 1.0.0.0 for binary compatibility -->
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+    
+    <!-- NuGet Package Properties -->
+    <PackageId>PCTTools</PackageId>
+    <Title>PCTTools</Title>
+    <Authors>clement-brodu</Authors>
+    <Company>clement-brodu</Company>
+    <Product>PCTTools</Product>
+    <Description>Library to provide additional tools for PCT (Progress Compilation Tools).</Description>
+    <Copyright>Copyright © clement-brodu 2025</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/clement-brodu/PCTTools</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/clement-brodu/PCTTools</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>OpenEdge;PCT;Progress;.NET;Assembly;Documentation;JSON</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>See GitHub releases for detailed release notes: https://github.com/clement-brodu/PCTTools/releases</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +41,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
