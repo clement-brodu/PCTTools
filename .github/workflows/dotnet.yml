@@ -7,34 +7,121 @@ on:
   push:
     branches: [ "main" ]
     tags:
-      - '*'
+      - 'v*'
+      - 'V*'
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build:
-
     runs-on: windows-latest  # For a list of available runner types, refer to
                                # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
   
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Récupère tout l'historique pour GitVersion
+    
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
+    
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0
       with:
         versionSpec: '5.x'
+    
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0
+      id: gitversion
+      with:
+        useConfigFile: true
+    
+    - name: Display GitVersion outputs
+      run: |
+        echo "Version: ${{ steps.gitversion.outputs.semVer }}"
+        echo "AssemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}"
+        echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}"
+    
     - name: Restore dependencies
       run: dotnet restore
+    
     - name: Build
       run: dotnet build -c Release --no-restore
+    
     - name: Test
       run: dotnet test -c Release --no-build --verbosity normal
-    - name: 'Upload Artifact'
-      uses: actions/upload-artifact@v3
+    
+    - name: 'Upload Build Artifact'
+      uses: actions/upload-artifact@v4
       with:
-        name: PCTTools
-        path: PCTTools\bin\Release\netstandard2.0\PCTTools.dll
+        name: PCTTools-${{ steps.gitversion.outputs.semVer }}
+        path: |
+          PCTTools\bin\Release\netstandard2.0\PCTTools.dll
+          PCTTools\bin\Release\netstandard2.0\PCTTools.pdb
+
+  release:
+    needs: build
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0
+      with:
+        versionSpec: '5.x'
+    
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0
+      id: gitversion
+      with:
+        useConfigFile: true
+    
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: PCTTools-${{ steps.gitversion.outputs.semVer }}
+        path: ./artifacts
+    
+    - name: Generate Release Notes
+      id: release_notes
+      run: |
+        $tag = "${{ github.ref_name }}"
+        $version = "${{ steps.gitversion.outputs.semVer }}"
+        $releaseNotes = @"
+        # PCTTools $version
+        
+        ## 📦 Artifacts
+        - **PCTTools.dll** : Main library
+        - **PCTTools.pdb** : Debug symbols
+        
+        ## 📋 Changes
+        See commit history for detailed changes.
+        
+        ---
+        **Version automatically generated on $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')**
+        "@
+        
+        # Échapper les caractères spéciaux pour GitHub Actions
+        $releaseNotes = $releaseNotes -replace "`r`n", "`n"
+        echo "RELEASE_NOTES<<EOF" >> $env:GITHUB_OUTPUT
+        echo $releaseNotes >> $env:GITHUB_OUTPUT
+        echo "EOF" >> $env:GITHUB_OUTPUT
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: PCTTools ${{ steps.gitversion.outputs.semVer }}
+        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+        draft: false
+        prerelease: ${{ contains(steps.gitversion.outputs.semVer, '-') }}
+        files: |
+          artifacts/PCTTools.dll
+          artifacts/PCTTools.pdb
+        token: ${{ secrets.GITHUB_TOKEN }}
