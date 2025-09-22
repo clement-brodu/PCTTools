@@ -53,6 +53,9 @@ jobs:
     - name: Test
       run: dotnet test -c Release --no-build --verbosity normal
     
+    - name: Create NuGet Package
+      run: dotnet pack PCTTools\PCTTools.csproj -c Release --no-build -o .
+    
     - name: 'Upload Build Artifact'
       uses: actions/upload-artifact@v4
       with:
@@ -60,6 +63,12 @@ jobs:
         path: |
           PCTTools\bin\Release\netstandard2.0\PCTTools.dll
           PCTTools\bin\Release\netstandard2.0\PCTTools.pdb
+    
+    - name: 'Upload NuGet Package'
+      uses: actions/upload-artifact@v4
+      with:
+        name: PCTTools-NuGet-${{ steps.gitversion.outputs.semVer }}
+        path: "*.nupkg"
 
   release:
     needs: build
@@ -88,6 +97,21 @@ jobs:
         name: PCTTools-${{ steps.gitversion.outputs.semVer }}
         path: ./artifacts
     
+    - name: Download NuGet Package
+      uses: actions/download-artifact@v4
+      with:
+        name: PCTTools-NuGet-${{ steps.gitversion.outputs.semVer }}
+        path: ./nuget-package
+    
+    - name: Create Release Package
+      run: |
+        mkdir release-package
+        Copy-Item "artifacts\PCTTools.dll" -Destination "release-package\"
+        Copy-Item "artifacts\PCTTools.pdb" -Destination "release-package\"
+        Copy-Item "README.md" -Destination "release-package\" -ErrorAction SilentlyContinue
+        Copy-Item "LICENSE" -Destination "release-package\" -ErrorAction SilentlyContinue
+        Compress-Archive -Path "release-package\*" -DestinationPath "PCTTools-${{ steps.gitversion.outputs.semVer }}.zip"
+    
     - name: Generate Release Notes
       id: release_notes
       run: |
@@ -99,6 +123,8 @@ jobs:
         ## 📦 Artifacts
         - **PCTTools.dll** : Main library
         - **PCTTools.pdb** : Debug symbols
+        - **PCTTools-$version.zip** : Complete package with library and documentation
+        - **PCTTools.$version.nupkg** : NuGet package for easy installation
         
         ## 📋 Changes
         See commit history for detailed changes.
@@ -124,4 +150,6 @@ jobs:
         files: |
           artifacts/PCTTools.dll
           artifacts/PCTTools.pdb
+          PCTTools-${{ steps.gitversion.outputs.semVer }}.zip
+          nuget-package/*.nupkg
         token: ${{ secrets.GITHUB_TOKEN }}
