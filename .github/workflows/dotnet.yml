@@ -92,13 +92,13 @@ jobs:
         useConfigFile: true
     
     - name: Download Build Artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: PCTTools-${{ steps.gitversion.outputs.semVer }}
         path: ./artifacts
     
     - name: Download NuGet Package
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: PCTTools-NuGet-${{ steps.gitversion.outputs.semVer }}
         path: ./nuget-package
