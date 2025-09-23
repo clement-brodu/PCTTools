@@ -8,7 +8,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Formatting = Newtonsoft.Json.Formatting;
@@ -36,6 +35,11 @@ namespace PCTTools
         /// Add Trace for each Type
         /// </summary>
         private bool logTypes;
+
+        /// <summary>
+        /// Add Trace for each Type Error
+        /// </summary>
+        private bool logTypesError = true;
 
         /// <summary>
         /// True if an error append during scan
@@ -293,6 +297,7 @@ namespace PCTTools
                     // Load Types that we can 
                     if (loadEx.Types != null)
                     {
+                        logTypesError = false;
                         foreach (Type type in loadEx.Types)
                         {
                             if (type is null) continue;
@@ -307,6 +312,10 @@ namespace PCTTools
                 {
                     ScanExceptions.Add(ex);
                     LogError("Error Reading Assembly \"{0}\" : {1}", assembly.GetName().Name, GetException(ex));
+                }
+                finally
+                {
+                    logTypesError = true;
                 }
             }
             catch (Exception ex)
@@ -345,7 +354,8 @@ namespace PCTTools
             catch (Exception ex)
             {
                 ScanExceptions.Add(ex);
-                LogError("Error Reading Type \"{0}\" : {1}", type.FullName, GetException(ex));
+                if (logTypesError) // Do not log error if type if part of ReflectionTypeLoadException
+                    LogError("Error Reading Type \"{0}\" : {1}", type.FullName, GetException(ex));
             }
         }
 
