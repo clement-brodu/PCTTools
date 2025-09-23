@@ -17,7 +17,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromAssembly(typeof(NestedPublic).Assembly);
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
 
             var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(AbstractDemo).FullName));
@@ -122,7 +122,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(typeof(EnumDemo));
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
 
             var doctype = pct.TypeDocumentations.First();
 
@@ -142,7 +142,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromAssembly(typeof(EnumWithObsoleteDemo).Assembly);
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
 
             var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(EnumWithObsoleteDemo).FullName));
@@ -187,7 +187,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(typeof(StaticDemo));
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
 
             var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
                 typeof(StaticDemo).FullName));
@@ -222,7 +222,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(typeof(EventsDemo));
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
             Assert.That(pct.TypeDocumentations.Count, Is.EqualTo(4));
 
             var doctype = pct.TypeDocumentations.First(t => t.Name.Equals(
@@ -241,7 +241,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
 
             pct.GenerateDocumentationFromType(typeof(MethodDemo));
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
 
             var method = pct.TypeDocumentations.First().Methods.First(m => m.Name == "GetMyInfo");
             Assert.That(method.IsStatic, Is.EqualTo(false));
