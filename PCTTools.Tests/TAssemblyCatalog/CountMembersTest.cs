@@ -39,7 +39,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
         {
             var pct = new AssemblyCatalog();
             pct.GenerateDocumentationFromType(typeToTest, withInherits);
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
 
             var typedoc = pct.TypeDocumentations.First(t => t.ShortName == typeToTest.Name);
 
@@ -56,7 +56,7 @@ namespace PCTTools.Tests.TAssemblyCatalog
             var pct = new AssemblyCatalog();
             pct.PublicOnly = true;
             pct.GenerateDocumentationFromType(typeToTest, withInherits);
-            Assert.IsFalse(pct.HasError);
+            Assert.That(pct.HasError, Is.False);
 
             var typedoc = pct.TypeDocumentations.First(t => t.ShortName == typeToTest.Name);
             var systemObjectMethodsCount = withInherits ? 6 : 0; // remove 6 public and protected methods of System.Object
