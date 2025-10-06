@@ -32,12 +32,12 @@ jobs:
         dotnet-version: 6.0.x
     
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v4
+      uses: gittools/actions/gitversion/setup@v3
       with:
         versionSpec: '5.x'
     
     - name: Determine Version
-      uses: gittools/actions/gitversion/execute@v4
+      uses: gittools/actions/gitversion/execute@v3
       id: gitversion
     
     - name: Display GitVersion outputs
@@ -83,12 +83,12 @@ jobs:
         fetch-depth: 0
     
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v4
+      uses: gittools/actions/gitversion/setup@v3
       with:
         versionSpec: '5.x'
     
     - name: Determine Version
-      uses: gittools/actions/gitversion/execute@v4
+      uses: gittools/actions/gitversion/execute@v3
       id: gitversion
     
     - name: Download Build Artifacts
