@@ -92,13 +92,13 @@ jobs:
       id: gitversion
     
     - name: Download Build Artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: PCTTools-${{ steps.gitversion.outputs.semVer }}
         path: ./artifacts
     
     - name: Download NuGet Package
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         name: PCTTools-NuGet-${{ steps.gitversion.outputs.semVer }}
         path: ./nuget-package
