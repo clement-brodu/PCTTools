@@ -3,7 +3,9 @@ using Newtonsoft.Json.Serialization;
 using PCTTools.Extensions;
 using PCTTools.Model;
 using PCTTools.Model.Enums;
+using PCTTools.Util;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,6 +19,10 @@ namespace PCTTools
     /// </summary>
     public class AssemblyCatalog
     {
+        private static readonly ConcurrentBag<string> missingAssemblies = new();
+
+        private readonly ConcurrentDictionary<string, Assembly> embededAssemblies = new();
+
         /// <summary>
         /// Writer to log things
         /// </summary>
@@ -29,6 +35,11 @@ namespace PCTTools
         /// Add Trace for each Type
         /// </summary>
         private bool logTypes;
+
+        /// <summary>
+        /// Add Trace for each Type Error
+        /// </summary>
+        private bool logTypesError = true;
 
         /// <summary>
         /// True if an error append during scan
@@ -138,6 +149,8 @@ namespace PCTTools
             File.WriteAllText(path, json);
         }
 
+
+
         /// <summary>
         /// Generate documentation from each assembly in current AppDomain
         /// </summary>
@@ -147,25 +160,107 @@ namespace PCTTools
 
             foreach (var assembly in appDomain.GetAssemblies())
             {
-                try
+                bool flowControl = ShouldSkipAssembly(assembly);
+                if (!flowControl)
                 {
-
-                    // Exclude this assembly
-                    if (assembly == typeof(AssemblyCatalog).Assembly) continue;
-                    // Exclude Newtonsoft.Json if embedded in PCTTools
-                    if (assembly == typeof(JsonConvert).Assembly && assembly.CodeBase.EndsWith("PCTTools.dll")) continue;
-
-                    GenerateDocumentationFromAssembly(assembly);
+                    continue;
                 }
-                catch (Exception ex)
+
+                flowControl = LoadEmbeddedAssemblies(assembly);
+                if (!flowControl)
                 {
-                    ScanExceptions.Add(ex);
-                    writer?.WriteLine("{0} - ERROR Reading Assembly {1} : {2}", DateTime.Now.ToString("s"), assembly.GetName().Name, ex.Message);
-                    writer?.WriteLine("{0}", ex.StackTrace);
+                    continue;
                 }
+            }
+
+            foreach (var assembly in appDomain.GetAssemblies())
+            {
+                bool flowControl = ShouldSkipAssembly(assembly);
+                if (!flowControl)
+                {
+                    continue;
+                }
+
+                GenerateDocumentationFromAssembly(assembly);
             }
         }
 
+        /// <summary>
+        /// Determines whether the specified assembly should be skipped during processing.
+        /// </summary>
+        /// <remarks>This method applies specific exclusion rules for certain assemblies, such as those
+        /// embedded in PCTTools or the assembly containing the <see cref="AssemblyCatalog"/> type.</remarks>
+        /// <param name="assembly">The assembly to evaluate.</param>
+        /// <returns><see langword="true"/> if the assembly should be skipped; otherwise, <see langword="false"/>.</returns>
+        private static bool ShouldSkipAssembly(Assembly assembly)
+        {
+            // Exclude this assembly
+            if (assembly == typeof(AssemblyCatalog).Assembly) return false;
+
+            // Exclude Newtonsoft.Json if embedded in PCTTools
+            if (assembly == typeof(JsonConvert).Assembly && assembly.CodeBase.EndsWith("PCTTools.dll")) return false;
+            // Exclude GitVersion.MsBuild if embedded in PCTTools
+            if (assembly == typeof(GitVersionInformation).Assembly && assembly.CodeBase.EndsWith("PCTTools.dll")) return false;
+            return true;
+        }
+
+        private void LogInfo(string format, params string[] args)
+        {
+            writer?.WriteLine("{0} {1} {2}", DateTime.Now.ToString("s"), "INFO ", string.Format(format, args));
+        }
+        private void LogError(string format, params string[] args)
+        {
+            writer?.WriteLine("{0} {1} {2}", DateTime.Now.ToString("s"), "ERROR", string.Format(format, args));
+        }
+
+        /// <summary>
+        /// Loads embedded assemblies from the specified assembly.
+        /// </summary>
+        /// <remarks>This method identifies and loads embedded assemblies contained within the provided
+        /// assembly.  It recursively processes any embedded assemblies to load their dependencies as well.  Assemblies
+        /// with resource names containing ".native." are excluded from loading.</remarks>
+        /// <param name="assembly">The assembly to inspect for embedded assemblies.</param>
+        /// <returns><see langword="true"/> if the operation completes successfully; otherwise, <see langword="false"/>.</returns>
+        private bool LoadEmbeddedAssemblies(Assembly assembly)
+        {
+            if (assembly.IsDynamic) return false;
+            try
+            {
+                var resources = assembly.GetManifestResourceNames()
+                        .Where(resource => resource.ToLower().Contains(".dll") && !resource.ToLower().Contains(".native."))
+                        .ToList();
+                if (resources.Any())
+                    LogInfo("Load Embedded Assemblies : \"{0}\"", assembly.GetName().Name);
+                foreach (var res in resources)
+                {
+                    using var stream = EmbeddedAssemblyHelper.LoadStream(assembly, res);
+                    var embeddedAssembly = Assembly.Load(EmbeddedAssemblyHelper.ReadStream(stream));
+                    LoadEmbeddedAssemblies(embeddedAssembly);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(GetException(ex));
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves a string representation of the specified exception.
+        /// </summary>
+        /// <param name="ex">The exception to process. Must not be <see langword="null"/>.</param>
+        /// <returns>The message of the exception if it is a <see cref="FileNotFoundException"/> or  <see
+        /// cref="ReflectionTypeLoadException"/>; otherwise, the full string representation of the exception.</returns>
+        private static string GetException(Exception ex)
+        {
+            if (ex is FileNotFoundException || ex is ReflectionTypeLoadException)
+            {
+                return ex.Message;
+            }
+
+            return ex.ToString();
+        }
 
         /// <summary>
         /// Generate documentation from an assembly
@@ -173,12 +268,60 @@ namespace PCTTools
         /// <param name="assembly">assembly to scan</param>
         public void GenerateDocumentationFromAssembly(Assembly assembly)
         {
-            if (logAssembly)
-                writer?.WriteLine("{0} - Scan Assembly {1}", DateTime.Now.ToString("s"), assembly.GetName().Name);
-
-            foreach (Type type in assembly.GetTypes())
+            try
             {
-                GenerateDocumentationFromType(type);
+                if (logAssembly)
+                    LogInfo("Scan Assembly \"{0}\"", assembly.GetName().Name);
+
+                foreach (Type type in assembly.GetTypes())
+                {
+                    GenerateDocumentationFromType(type);
+                }
+            }
+            catch (ReflectionTypeLoadException loadEx)
+            {
+                try
+                {
+                    ScanExceptions.Add(loadEx);
+                    LogError("Error Reading Assembly \"{0}\" : {1}", assembly.GetName().Name, GetException(loadEx));
+                    var listMessage = new List<string>();
+                    foreach (Exception ex in loadEx.LoaderExceptions)
+                    {
+                        if (!listMessage.Contains(ex.Message))
+                        {
+                            listMessage.Add(ex.Message);
+                            LogError("    - LoaderExceptions : {0}", GetException(ex));
+                        }
+                    }
+
+                    // Load Types that we can 
+                    if (loadEx.Types != null)
+                    {
+                        logTypesError = false;
+                        foreach (Type type in loadEx.Types)
+                        {
+                            if (type is null) continue;
+
+                            GenerateDocumentationFromType(type);
+                        }
+                    }
+                    LogError("    => partial load : {0} types loaded", loadEx.Types.Count(t => t != null).ToString());
+
+                }
+                catch (Exception ex)
+                {
+                    ScanExceptions.Add(ex);
+                    LogError("Error Reading Assembly \"{0}\" : {1}", assembly.GetName().Name, GetException(ex));
+                }
+                finally
+                {
+                    logTypesError = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ScanExceptions.Add(ex);
+                LogError("Error Reading Assembly \"{0}\" : {1}", assembly.GetName().Name, GetException(ex));
             }
         }
 
@@ -203,7 +346,7 @@ namespace PCTTools
                 if (type.IsPublic)
                 {
                     if (logTypes)
-                        writer?.WriteLine("{0} - \tScan Type {1}", DateTime.Now.ToString("s"), type.FullName);
+                        LogInfo("\tScan Type \"{0}\"", type.FullName);
 
                     AddTypeToList(type, withInherited);
                 }
@@ -211,8 +354,8 @@ namespace PCTTools
             catch (Exception ex)
             {
                 ScanExceptions.Add(ex);
-                writer?.WriteLine("{0} - ERROR Reading Type {1} : {2}", DateTime.Now.ToString("s"), type.FullName, ex.Message);
-                writer?.WriteLine("{0}", ex.StackTrace);
+                if (logTypesError) // Do not log error if type if part of ReflectionTypeLoadException
+                    LogError("Error Reading Type \"{0}\" : {1}", type.FullName, GetException(ex));
             }
         }
 
