@@ -233,7 +233,7 @@ namespace PCTTools
                     LogInfo("Load Embedded Assemblies : \"{0}\"", assembly.GetName().Name);
                 foreach (var res in resources)
                 {
-                    var stream = EmbeddedAssemblyHelper.LoadStream(assembly, res);
+                    using var stream = EmbeddedAssemblyHelper.LoadStream(assembly, res);
                     var embeddedAssembly = Assembly.Load(EmbeddedAssemblyHelper.ReadStream(stream));
                     LoadEmbeddedAssemblies(embeddedAssembly);
                 }
