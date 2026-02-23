@@ -59,7 +59,7 @@ jobs:
       run: dotnet pack PCTTools\PCTTools.csproj -c Release --no-build -o .
     
     - name: 'Upload Build Artifact'
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: PCTTools-${{ steps.gitversion.outputs.semVer }}
         path: |
@@ -67,7 +67,7 @@ jobs:
           PCTTools\bin\Release\netstandard2.0\PCTTools.pdb
     
     - name: 'Upload NuGet Package'
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: PCTTools-NuGet-${{ steps.gitversion.outputs.semVer }}
         path: "*.nupkg"
