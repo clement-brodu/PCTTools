@@ -166,11 +166,7 @@ namespace PCTTools
                     continue;
                 }
 
-                flowControl = LoadEmbeddedAssemblies(assembly);
-                if (!flowControl)
-                {
-                    continue;
-                }
+                LoadEmbeddedAssemblies(assembly);
             }
 
             foreach (var assembly in appDomain.GetAssemblies())
@@ -235,6 +231,7 @@ namespace PCTTools
                 {
                     using var stream = EmbeddedAssemblyHelper.LoadStream(assembly, res);
                     var embeddedAssembly = Assembly.Load(EmbeddedAssemblyHelper.ReadStream(stream));
+                    LogInfo("    => Embedded Assemblies : \"{0}\"", embeddedAssembly.GetName().FullName);
                     LoadEmbeddedAssemblies(embeddedAssembly);
                 }
             }
