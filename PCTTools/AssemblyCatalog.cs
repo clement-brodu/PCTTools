@@ -411,12 +411,22 @@ namespace PCTTools
         {
             var baseTypes = new List<string>();
 
-            var baseType = type.BaseType;
-            while (baseType != null)
+            if (type.IsInterface)
             {
-                baseTypes.Add(baseType.FullName);
+                foreach (var iface in type.GetInterfaces())
+                {
+                    baseTypes.Add(iface.FullName);
+                }
+            }
+            else
+            {
+                var baseType = type.BaseType;
+                while (baseType != null)
+                {
+                    baseTypes.Add(baseType.FullName);
 
-                baseType = baseType.BaseType;
+                    baseType = baseType.BaseType;
+                }
             }
             return baseTypes;
         }
